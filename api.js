@@ -58,8 +58,7 @@ app.get(`/api/attack`, async (req, res) => {
     //check fields
     const containsBlacklisted = blackList.some(char => field.host.includes(char));
     if (!field.host || !urlRegex.test(field.host) || containsBlacklisted) return res.json({ status: 500, data: `host needs to be a valid URL` });
-    if (!field.time || isNaN(field.time) || field.time > 86400) return res.json({ status: 500, data: `time needs to be a number between 0-65535` });
-    if (!field.server || !servers.hasOwnProperty(field.server)) return res.json({ status: 500, data: `server is invalid or not found in the servers list` });
+    if (!field.time || isNaN(field.time) || field.time > 86400) return res.json({ status: 500, data: `time needs to be a number between 1-86400` });
     if (!field.method || !Object.keys(commands).includes(field.method.toUpperCase())) return res.json({ status: 500, data: `invalid attack method` });
 
     try {
